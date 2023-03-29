@@ -1,0 +1,116 @@
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+
+public class Menu extends JMenu {
+	protected String name;
+	Menu(Canvas canvas,JFrame frame,String File,String Edit){
+		JMenuBar menubar = new JMenuBar();
+		JMenu File_menu = new JMenu("File");
+		JMenu Edit_menu = new JMenu("Edit");
+		Menu_item menuitem_Group = new Group_item(canvas,"Group");
+		
+		Menu_item menuitem_UnGroup = new UnGroup_item(canvas, "UnGroup");
+		Menu_item menuitem_Rename = new Rename_item(canvas, "Rename");
+		Edit_menu.add(menuitem_Group);
+		Edit_menu.addSeparator();
+		Edit_menu.add(menuitem_UnGroup);
+		Edit_menu.addSeparator();
+		Edit_menu.add(menuitem_Rename);
+		menubar.add(File_menu);
+		menubar.add(Edit_menu);
+		frame.setJMenuBar(menubar);
+	};
+};
+class Menu_item extends JMenuItem implements ActionListener{
+	Menu_item(String item_name){
+		this.setText(item_name);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+}
+	
+}
+class Group_item extends Menu_item{
+	protected Canvas cans;
+	Group_item(Canvas canvas,String group){
+		super(group);
+		this.addActionListener(this);
+		cans = canvas;
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(Canvas.Now_state.group_list.size()>1) {
+		int Max_x = -1,Max_y = -1,Min_x = cans.getWidth(),Min_y = cans.getHeight();
+		for(int i = 0; i < Canvas.Now_state.group_list.size() ; i++) {
+			if(Max_x < Canvas.Now_state.group_list.get(i).getX()+Canvas.Now_state.group_list.get(i).getWidth()) {
+				Max_x = Canvas.Now_state.group_list.get(i).getX()+Canvas.Now_state.group_list.get(i).getWidth();
+			}
+			if(Min_x > Canvas.Now_state.group_list.get(i).getX()) {
+				Min_x = Canvas.Now_state.group_list.get(i).getX();
+			}
+			if(Max_y < Canvas.Now_state.group_list.get(i).getY()+Canvas.Now_state.group_list.get(i).getHeight()) {
+				Max_y = Canvas.Now_state.group_list.get(i).getY()+Canvas.Now_state.group_list.get(i).getHeight();
+			}
+			if(Min_y > Canvas.Now_state.group_list.get(i).getY()) {
+				Min_y = Canvas.Now_state.group_list.get(i).getY();
+			}
+		}
+		Base_Object composit = new group_Object(cans,Min_x,Min_y,Max_x,Max_y);
+		cans.add(composit);
+		cans.repaint();
+		}
+	}
+}
+class UnGroup_item extends Menu_item{
+	protected Canvas cans;
+	UnGroup_item(Canvas canvas,String item_name) {
+		super(item_name);
+		cans = canvas;
+		this.addActionListener(this);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		for(int i = cans.Now_state.object_list.size()-1 ; i >= 0;i--) {
+			if(cans.Now_state.object_list.get(i).isgroup) {
+				cans.remove(cans.Now_state.object_list.get(i));
+			}
+		}
+	}
+}
+class Rename_item extends Menu_item{
+	protected Canvas cans;
+	Rename_item(Canvas canvas,String item_name) {
+		super(item_name);
+		cans = canvas;
+		this.addActionListener(this);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(cans.Now_state.Now_obj!=null) {
+			 String name = JOptionPane.showInputDialog("Object Name");
+			 cans.Now_state.Now_obj.setText(name);
+			 cans.Now_state.Now_obj.setHorizontalTextPosition(JLabel.CENTER);
+			 cans.Now_state.Now_obj.setVerticalTextPosition(JLabel.CENTER);
+		}
+	}
+}
+ 
+
+

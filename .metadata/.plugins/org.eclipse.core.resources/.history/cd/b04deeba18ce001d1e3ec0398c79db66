@@ -1,0 +1,179 @@
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+public class Base_Object extends JLabel{
+	protected String name;
+	protected Point point;
+	protected int ObjPos_X;
+	protected int ObjPos_Y;
+	protected Point Top;
+	protected Point Left;
+	protected Point Bottom;
+	protected Point Right;
+	protected int width;
+	protected int height;
+	protected int img_type;
+	protected boolean isgroup = false;
+	protected ArrayList<Base_Object> hasgroup_list;
+	Base_Object(Canvas cans,Icon img,int X,int Y,int Max_x,int Max_y,MouseEvent e){
+		this.hasgroup_list = new ArrayList<Base_Object>();
+		if(img != null) {// class_Object && Case_object 
+			this.point = e.getPoint();
+			this.ObjPos_X = X;
+		    this.ObjPos_Y = Y;
+		    this.width = 80;
+		    this.height = 80;
+			this.setIcon(img);
+			this.setBounds(ObjPos_X, ObjPos_Y, width, height);
+			this.hasgroup_list = null;
+			this.isgroup = false;
+
+		}else {// Group_Object
+			this.ObjPos_X = X;
+		    this.ObjPos_Y = Y;
+		    this.width = Max_x-ObjPos_X;
+		    this.height = Max_y-ObjPos_Y;
+			this.isgroup = true;
+			this.setOpaque(true);
+			this.setIcon(null);
+			this.setBackground(new Color(200,132,255,120));		
+			this.setBorder(BorderFactory.createLineBorder(Color.black));
+			this.setBounds(ObjPos_X,ObjPos_Y,width,height);
+			for(int i = 0 ; i < cans.Now_state.group_list.size(); i++) {
+				cans.Now_state.group_list.get(i).isgroup = true;
+				this.hasgroup_list.add(cans.Now_state.group_list.get(i));
+			}
+			cans.Now_state.object_list.add(this);
+		}
+	}
+	
+	boolean Object_selcet(int X,int Y,int obj_x,int obj_y) {
+		if(this.contains(X-obj_x,Y-obj_y)) {
+			return true; 
+		}
+		return false;
+	};
+	void focus(Base_Object obj,Icon class_img,Icon case_img) {
+		if(obj.img_type == 1) {
+			obj.setIcon(class_img);
+		}else if(obj.img_type == 2){
+			obj.setIcon(case_img);
+		}
+	}
+	void clear_focus(ArrayList<Base_Object> obj_list,Icon class_img,Icon case_img ){
+		for(int i = 0 ; i < obj_list.size() ; i++) {
+			if(obj_list.get(i).img_type == 1) {
+				obj_list.get(i).setIcon(class_img);
+			}else if(obj_list.get(i).img_type == 2){
+				obj_list.get(i).setIcon(case_img);
+			}
+		}
+	}
+	Point choose_port(MouseEvent e, Base_Object obj) {
+		  double Top_distance = e.getPoint().distance(obj.Top);
+		  double Left_distance = e.getPoint().distance(obj.Left);
+		  double Bottom_distance = e.getPoint().distance(obj.Bottom);
+		  double Right_distance = e.getPoint().distance(obj.Right);
+		  double min = 800;
+		  Point ret = null;
+		  Point point[] = {obj.Top,obj.Left,obj.Bottom,obj.Right};
+		  double temp_array[] = {Top_distance,Left_distance,Bottom_distance,Right_distance};
+		  for(int i = 0; i < temp_array.length ;i++) {
+			  if(min>temp_array[i]) {
+				    min = temp_array[i];
+				    ret = point[i];
+			 }
+		  }
+		return ret;
+	}
+	public void drugSetLocation(Base_Object obj,int dx,int dy) {
+		
+	};
+}
+class Class_Object extends Base_Object{
+
+	Class_Object(Icon img, int X, int Y,MouseEvent e) {
+		super(null,img, X, Y,0,0,e);
+		img_type = 1;
+		this.Top = new Point(ObjPos_X+30,ObjPos_Y+10);
+		this.Left = new Point(ObjPos_X,ObjPos_Y+40);
+		this.Bottom = new Point(ObjPos_X+30,ObjPos_Y+70);
+		this.Right = new Point(ObjPos_X+60,ObjPos_Y+40);
+		this.setText("class");
+		this.setHorizontalTextPosition(JLabel.CENTER);
+		this.setVerticalTextPosition(JLabel.CENTER);
+	}
+	public void drugSetLocation(Base_Object obj,int dx,int dy) {
+		obj.setLocation(obj.getX()+dx,obj.getY()+dy);
+		obj.point.setLocation(obj.getX()+dx,obj.getY()+dy);
+		obj.Top.setLocation(obj.getX()+dx+30,obj.getY()+dy+10);
+		obj.Bottom.setLocation(obj.getX()+dx+30,obj.getY()+dy+70);
+		obj.Left.setLocation(obj.getX()+dx,obj.getY()+dy+40);
+		obj.Right.setLocation(obj.getX()+60,obj.getY()+dy+40);
+		};
+	}
+class Case_Object extends Base_Object{
+
+	Case_Object(Icon img, int X, int Y,MouseEvent e) {
+		super(null,img, X, Y,0,0,e);
+		img_type = 2;
+		// TODO Auto-generated constructor stub
+		this.Top = new Point(ObjPos_X+30,ObjPos_Y+20);
+		this.Left = new Point(ObjPos_X,ObjPos_Y+40);
+		this.Bottom = new Point(ObjPos_X+35,ObjPos_Y+60);
+		this.Right = new Point(ObjPos_X+60,ObjPos_Y+40);
+		this.setText("case");
+		this.setHorizontalTextPosition(JLabel.CENTER);
+		this.setVerticalTextPosition(JLabel.CENTER);
+	}
+	public void drugSetLocation(Base_Object obj,int dx,int dy) {
+		obj.setLocation(obj.getX()+dx,obj.getY()+dy);
+		obj.point.setLocation(obj.getX()+dx,obj.getY()+dy);
+		obj.Top.setLocation(obj.getX()+dx+35,obj.getY()+dy+20);
+		obj.Bottom.setLocation(obj.getX()+dx+30,obj.getY()+dy+60);
+		obj.Left.setLocation(obj.getX()+dx,obj.getY()+dy+40);
+		obj.Right.setLocation(obj.getX()+60,obj.getY()+dy+40);
+	};
+}
+class group_Object extends Base_Object{
+
+	group_Object(Canvas canvas ,int Min_x, int Min_y,int Max_x,int Max_y) {
+		super(canvas,null, Min_x, Min_y,Max_x,Max_y,null);
+	}
+	public void drugSetLocation(Base_Object obj,int dx,int dy) {
+		int x = obj.getX()+dx;
+		int y = obj.getY()+dy;
+		obj.setLocation(new Point(x,y));	
+	};
+	@Override
+	public void setLocation(Point p) {
+		int offset_x = p.x - this.getX();
+		int offset_y = p.y - this.getY();
+ 		for(Base_Object obj: hasgroup_list) {
+			if(obj.img_type == 1) {
+				obj.setLocation(obj.getX()+offset_x,obj.getY()+offset_y);
+				obj.point.setLocation(obj.getX()+dx,obj.getY()+dy);
+				obj.Top.setLocation(obj.getX()+dx+30,obj.getY()+dy+10);
+				obj.Bottom.setLocation(obj.getX()+dx+30,obj.getY()+dy+70);
+				obj.Left.setLocation(obj.getX()+dx,obj.getY()+dy+40);
+				obj.Right.setLocation(obj.getX()+60,obj.getY()+dy+40);
+			}else if(obj.img_type == 2) {
+				obj.setLocation(obj.getX()+offset_x,obj.getY()+offset_y);
+				this.Top = new Point(obj.getX()+offset_x+30,obj.getY()+offset_y+20);
+				this.Left = new Point(obj.getX()+offset_x,obj.getY()+offset_y+40);
+				this.Bottom = new Point(obj.getX()+offset_x+35,obj.getY()+offset_y+60);
+				this.Right = new Point(obj.getX()+offset_x+60,obj.getY()+offset_y+40);
+			}
+		}
+ 		super.setLocation(p);
+	}
+}

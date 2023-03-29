@@ -1,0 +1,35 @@
+import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+interface State_interface{
+	 void Press_event(Canvas canvas,int X,int Y);
+}
+
+
+public class Canvas extends JPanel{
+	public static State Now_state;
+	private State[] state_group = new State[6];
+	
+	Canvas(){
+		this.setBounds(80, 0, 605, 640);
+		this.setBackground(Color.white);
+		state_group[0] = new Select_state();
+		state_group[1] = new Assoc_state();
+		state_group[2] = new General_state();
+		state_group[3] = new Composit_state();
+		state_group[4] = new Class_state();
+		state_group[5] = new UseCase_state();
+		this.Now_state = state_group[0];
+		
+	}
+	public void setState(int s) {
+		Now_state =  state_group[s];
+	}
+};
+

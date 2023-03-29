@@ -1,0 +1,65 @@
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+
+public class Object extends JLabel implements MouseListener{
+	protected int ObjPos_X;
+	protected int ObjPos_Y;
+	Object(Icon img,int X,int Y){
+		this.ObjPos_X = X-40;
+		this.ObjPos_Y = Y-40;
+		this.setIcon(img);
+		this.setBounds(ObjPos_X, ObjPos_Y, 80, 80);
+		System.out.println(ObjPos_X);
+		System.out.println(ObjPos_Y);
+	}
+	boolean Object_selcet(int X,int Y,int obj_x,int obj_y) {
+		if(this.contains(X-this.ObjPos_X,Y-this.ObjPos_Y)) {
+			return true; 
+		}
+		return false;
+	};
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	};
+}
+class Class_Object extends Object{
+
+	Class_Object(Icon img, int X, int Y) {
+		super(img, X, Y);
+		// TODO Auto-generated constructor stub
+	}
+	
+}
+class Case_Object extends Object{
+
+	Case_Object(Icon img, int X, int Y) {
+		super(img, X, Y);
+		// TODO Auto-generated constructor stub
+	}
+	
+}

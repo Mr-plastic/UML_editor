@@ -1,0 +1,284 @@
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+
+abstract class State  extends JLabel implements State_interface{
+	protected static ArrayList<Base_Object> object_list = new ArrayList<Base_Object>();
+	protected ArrayList<Base_Object> group_list = new ArrayList<Base_Object>();
+	protected Base_Object Now_obj;
+}
+class Now_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e) {}
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+			}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	};
+}
+
+class Select_state extends State{
+	protected static Base_Object target_object;
+	protected static int press_point_X;
+	protected static int press_point_Y;
+	protected static int Drag_point_X;
+	protected static int Drag_point_Y;
+	boolean Drag_detect = false;
+	Rectangle rectangle = new Rectangle();
+	
+	
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e){
+		press_point_X = e.getX();
+		press_point_Y = e.getY();
+		if(group_list.size()>0) {
+			for(int i = 0 ; i < group_list.size(); i++) { // refresh dragSelect_obj
+				group_list.remove(i);
+			}
+		}
+
+//----------------Class_object-----------------------------------------------------------------------------------------------------------		
+		for(int i = object_list.size()-1 ; i >= 0; i--) {
+			if(object_list.get(i).Object_selcet(press_point_X,press_point_Y,object_list.get(i).getX(),object_list.get(i).getY())) {
+				target_object = object_list.get(i);
+				Now_obj = target_object;
+				object_list.remove(object_list.get(i));
+				object_list.add(target_object);
+				break;
+			}else {
+				object_list.get(i).focus(object_list.get(i),new ImageIcon("./img/class.png"),new ImageIcon("./img/case.png"));
+				target_object = null;
+			}
+		}
+		if(target_object!=null) {
+			target_object.focus(target_object,new ImageIcon("./img/select_class.png"),new ImageIcon("./img/select_case.png"));
+		}
+		
+
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		Drag_point_X = e.getX();
+		Drag_point_Y = e.getY();
+		if(target_object!=null) {
+			int dx = press_point_X -target_object.getX();
+			int dy = press_point_Y -target_object.getY();
+			target_object.drugSetLocation(target_object, dx, dy);
+			press_point_X = Drag_point_X;
+			press_point_Y = Drag_point_Y;
+			canvas.repaint();
+			}else { 
+				for(int i = 0 ; i < object_list.size(); i++) { 								//refresh all icon
+					object_list.get(i).focus(object_list.get(i),new ImageIcon("./img/class.png"),new ImageIcon("./img/case.png"));
+				}
+				rectangle.draw_rect(press_point_X,press_point_Y,Drag_point_X,Drag_point_Y);
+				canvas.add(rectangle);
+				canvas.repaint();
+				Drag_detect = true;
+			}
+	}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		if(Drag_detect) {
+			for(int i = 0 ; i < object_list.size(); i++) {
+			if(object_list.get(i).isgroup == false &&object_list.get(i).getX() > Math.min(press_point_X,Drag_point_X) && object_list.get(i).getX() < Math.max(press_point_X,Drag_point_X) && object_list.get(i).getY() > Math.min(press_point_Y,Drag_point_Y) && object_list.get(i).getY() < Math.max(press_point_Y, Drag_point_Y)) {
+
+					object_list.get(i).focus(object_list.get(i),new ImageIcon("./img/select_class.png"),new ImageIcon("./img/select_case.png"));
+					group_list.add(object_list.get(i));
+
+				}
+			}
+	
+			Drag_detect = false;
+		}
+		canvas.remove(rectangle);
+		canvas.repaint();
+		
+	}
+}
+class Assoc_state extends State{
+	protected ConnectLine AssocLine;
+	protected Base_Object start_obj;
+	protected Base_Object end_obj;
+	protected Point Started_point; 
+	protected Point End_point; 
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e) {
+		Started_point = null;
+		End_point = null;
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY()))
+			{
+				Started_point =object_list.get(i).choose_port(e, object_list.get(i));
+				start_obj = object_list.get(i);
+			}
+		}
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY())==true)
+			{
+				End_point =object_list.get(i).choose_port(e, object_list.get(i));
+				end_obj =object_list.get(i);
+			}
+		}
+		if(Started_point!=null&&End_point!=null&&start_obj!=end_obj) {
+			ConnectLine AssocLine = new AssocLine(Started_point, End_point, start_obj, end_obj);
+			canvas.Line_list.add(AssocLine);
+			canvas.repaint();
+		}
+		
+	}
+	
+}
+class General_state extends State{
+	protected ConnectLine Composit;
+	protected Object start_obj;
+	protected Object end_obj;
+	protected Point Started_point; 
+	protected Point End_point; 
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e){
+		Started_point = null;
+		End_point = null;
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY()))
+			{
+				Started_point =object_list.get(i).choose_port(e, object_list.get(i));
+				start_obj = object_list.get(i);
+			}
+		}
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY())==true)
+			{
+				End_point =object_list.get(i).choose_port(e, object_list.get(i));
+				end_obj =object_list.get(i);
+			}
+		}
+		if(Started_point!=null&&End_point!=null&&start_obj!=end_obj) {
+			ConnectLine General = new GeneralizationLine(Started_point, End_point, start_obj, end_obj);
+			canvas.Line_list.add(General);
+			canvas.repaint();
+		}
+		
+	}
+}
+class Composit_state extends State{
+	protected ConnectLine Composit;
+	protected Object start_obj;
+	protected Object end_obj;
+	protected Point Started_point; 
+	protected Point End_point; 
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e){ 
+		Started_point = null;
+		End_point = null;
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY()))
+			{
+				Started_point =object_list.get(i).choose_port(e, object_list.get(i));
+				start_obj = object_list.get(i);
+			}
+		}
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		for(int i = object_list.size()-1 ; i >= 0; i--){
+			if(object_list.get(i).Object_selcet(e.getX(),e.getY(),object_list.get(i).getX(),object_list.get(i).getY())==true)
+			{
+				End_point =object_list.get(i).choose_port(e, object_list.get(i));
+				end_obj =object_list.get(i);
+			}
+		}
+		if(Started_point!=null&&End_point!=null&&start_obj!=end_obj) {
+			ConnectLine Composit = new CompositionLine(Started_point, End_point, start_obj, end_obj);
+			canvas.Line_list.add(Composit);
+			canvas.repaint();
+		}
+	}
+}
+class Class_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e){
+//		System.out.println(Line_list);
+		Base_Object class_paint = new Class_Object(new ImageIcon("./img/class.png"), e.getX(), e.getY(),e);
+		object_list.add(class_paint);
+		canvas.add(class_paint);
+		class_paint.clear_focus(object_list,new ImageIcon("./img/class.png"),new ImageIcon("./img/case.png"));
+		canvas.repaint();
+	}
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class UseCase_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,MouseEvent e){
+		Base_Object usecase_paint = new Case_Object(new ImageIcon("./img/case.png"),e.getX(),e.getY(),e);
+		object_list.add(usecase_paint);
+		canvas.add(usecase_paint);
+		usecase_paint.clear_focus(object_list,new ImageIcon("./img/class.png"),new ImageIcon("./img/case.png"));
+		canvas.repaint();	
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas,MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+    public void Release_event(Canvas canvas, MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}

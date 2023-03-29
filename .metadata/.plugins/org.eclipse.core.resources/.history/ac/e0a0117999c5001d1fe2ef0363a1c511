@@ -1,0 +1,111 @@
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+
+abstract class State  extends JLabel implements State_interface{
+	protected static Object target_object;
+	protected static ArrayList<Object> object_list = new ArrayList<Object>();
+}
+class Now_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y) {}
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	};
+}
+
+class Select_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){ 
+		for(int i = object_list.size()-1 ; i >= 0; i--) {
+			if(object_list.get(i).Object_selcet(X,Y)) {
+				target_object = object_list.get(i);
+				System.out.println(target_object);
+				break;
+			}else {
+				target_object = null;
+			}
+		}
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		if(target_object!=null) {
+//			target_object.setLocation(getMousePosition());
+//			selcet_canvas.add(target_object);
+		}
+	}
+}
+class Assoc_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){ 
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class General_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){ 
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class Composit_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){ 
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class Class_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){
+		Object class_paint = new Class_Object(new ImageIcon("./img/class.png"), X, Y);
+		object_list.add(class_paint);
+		canvas.add(class_paint);
+		canvas.repaint();
+	}
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class UseCase_state extends State{
+	@Override
+	public void Press_event(Canvas canvas,int X,int Y){
+		Object usecase_paint = new Case_Object(new ImageIcon("./img/case.png"), X, Y);
+		object_list.add(usecase_paint);
+		canvas.add(usecase_paint);
+		canvas.repaint();
+		
+ }
+
+	@Override
+	public void Drag_event(Canvas canvas, int X, int Y) {
+		// TODO Auto-generated method stub
+		
+	}
+}

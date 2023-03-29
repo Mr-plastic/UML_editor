@@ -1,0 +1,43 @@
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+
+interface Connect_Line_basic{
+	void paint(Canvas canvas);
+}
+public class ConnectLine implements Connect_Line_basic{
+	 protected Object startObj;
+	 protected Object endObj;
+	 protected Point startConnPort;
+	 protected Point endConnPort;
+	
+    ConnectLine(Point start,Point end,Object startObj,Object endObj) {
+    	startObj = startObj;
+    	endObj = endObj;
+    	startConnPort = start;
+    	endConnPort = end;
+    }
+	@Override
+	public void paint(Canvas canvas) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
+
+class AssocLine extends ConnectLine{
+	AssocLine(Point start,Point end,Object startObj,Object endObj) {
+		super(start, end,startObj,endObj);
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		for(ConnectLine coonnectline: Line_list) {
+			g.drawLine((int)coonnectline.startConnPort.getX(), (int)coonnectline.startConnPort.getY(),(int) coonnectline.endConnPort.getX(),(int)coonnectline. endConnPort.getY());
+		}
+	}
+
+}
